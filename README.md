@@ -13,8 +13,10 @@ go install github.com/dolmen-go/gobinupgrade@latest
 ## Usage
 
 ```bash
-gobinupgrade [-n] [-v] <binary_name>...
+gobinupgrade [-n] [-v] <binary_name>[@<version>...
 ```
+
+Default version is 'latest'. To keep the same version as already installed use just '<binary_name>@'.
 
 ### Options
 

@@ -1,6 +1,6 @@
 // gobinupgrade upgrades Go binaries installed in $GOPATH/bin.
 //
-// Usage: gobinupgrade [-n] [-v] <file>
+// Usage: gobinupgrade [-n] [-v] <file>[@<version>]...
 //
 // Options:
 //
@@ -64,6 +64,11 @@ func main() {
 
 	// Each arg is the name of a tool in $GOPATH/bin
 	for _, f := range flag.Args() {
+		var version string
+		var ok bool
+		if f, version, ok = strings.Cut(f, "@"); !ok {
+			version = "latest"
+		}
 		if runtime.GOOS == "windows" {
 			if filepath.Ext(f) == "" {
 				f += ".exe"
@@ -72,11 +77,11 @@ func main() {
 		if dir, _ := filepath.Split(f); dir == "" {
 			f = filepath.Join(gobin, f)
 		}
-		process(f)
+		process(f, version)
 	}
 }
 
-func process(binPath string) {
+func process(binPath string, version string) {
 	info, err := buildinfo.ReadFile(binPath)
 	if err != nil || info.Path == "" {
 		fmt.Fprintf(os.Stderr, "%s: no go module information embeded in binary\n", binPath)
@@ -111,7 +116,10 @@ func process(binPath string) {
 			}
 		}
 	}
-	args = append(args, info.Path+"@latest")
+	if version == "" {
+		version = info.Main.Version
+	}
+	args = append(args, info.Path+"@"+version)
 
 	cmd := exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
