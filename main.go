@@ -16,6 +16,7 @@ package main
 import (
 	"bufio"
 	"debug/buildinfo"
+	"errors"
 	"flag"
 	"fmt"
 	"go/build"
@@ -83,7 +84,14 @@ func main() {
 
 func process(binPath string, version string) {
 	info, err := buildinfo.ReadFile(binPath)
-	if err != nil || info.Path == "" {
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			err = os.ErrNotExist
+		}
+		fmt.Fprintf(os.Stderr, "%s: %v\n", binPath, err)
+		return
+	}
+	if info.Path == "" {
 		fmt.Fprintf(os.Stderr, "%s: no go module information embeded in binary\n", binPath)
 		return
 	}
