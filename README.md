@@ -2,18 +2,24 @@
 
 `gobinupgrade` is a tool to upgrade Go binaries installed in `$GOPATH/bin` (or `$GOBIN`) to their latest versions.
 
-It works by reading the embedded build information from the binary to determine its original package path, build tags, and environment variables (like `GOOS`, `GOARCH`, `CGO_ENABLED`), and then runs `go install <path>@latest` with those same settings.
+It works by reading the [embedded build information](https://pkg.go.dev/debug/buildinfo) from the binary to determine its original package path, build tags, and environment variables (like `GOOS`, `GOARCH`, `CGO_ENABLED`), and then runs `go install <path>@latest` with those same settings.
 
-## Installation
+## Install
 
 ```bash
 go install github.com/dolmen-go/gobinupgrade@latest
 ```
 
+### Run without install
+
+```bash
+go run github.com/dolmen-go/gobinupgrade@latest
+```
+
 ## Usage
 
 ```bash
-gobinupgrade [-n] [-v] <binary_name>[@<version>...
+gobinupgrade [-n] [-v] <binary_name>[@<version>]...
 ```
 
 Default version is 'latest'. To keep the same version as already installed use just '<binary_name>@'.
